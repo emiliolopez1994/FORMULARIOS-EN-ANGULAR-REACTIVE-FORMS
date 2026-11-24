@@ -1,0 +1,168 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-content">
+      <div class="brand" aria-label="FormLab, práctica de registro">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="24" height="24" rx="7" fill="currentColor"/><path d="M11 16.2l3.2 3.2 6.8-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>FormLab<span class="brand-dot">.</span></span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-label">Lenguaje de Programación III</span>
+        <span class="version-pill">Práctica 07 · Angular</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="page-intro">
+      <div class="eyebrow"><span class="eyebrow-line"></span> MÓDULO DE FORMULARIOS REACTIVOS</div>
+      <h1>Registro de usuarios<span class="title-period">.</span></h1>
+      <p>Completa tus datos, valida la información en tiempo real y agrega las referencias que necesites.</p>
+    </div>
+
+    <div class="dashboard-grid">
+      <section class="main-panel" aria-labelledby="form-heading">
+        <div class="panel-header">
+          <div>
+            <span class="panel-overline">FORMULARIO DE INSCRIPCIÓN</span>
+            <h2 id="form-heading">Crear nuevo registro</h2>
+            <p>Los campos marcados con <strong class="required">*</strong> son obligatorios.</p>
+          </div>
+          <span class="step-pill">Paso único</span>
+        </div>
+
+        <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" novalidate>
+          <section class="form-section" aria-labelledby="personal-heading">
+            <div class="section-heading">
+              <span class="section-number">01</span>
+              <div><h3 id="personal-heading">Información personal</h3><p>Datos básicos de identificación y contacto</p></div>
+            </div>
+            <div class="field-grid">
+              <div class="field field-wide">
+                <label for="nombreCompleto">Nombre completo <span class="required">*</span></label>
+                <input id="nombreCompleto" formControlName="nombreCompleto" autocomplete="name" placeholder="Ej. Juan Pérez" [class.is-invalid]="esCampoInvalido('nombreCompleto')" [attr.aria-invalid]="esCampoInvalido('nombreCompleto')" aria-describedby="nombre-error" />
+                <small id="nombre-error" class="field-error" *ngIf="esCampoInvalido('nombreCompleto')">Ingresa tu nombre con al menos 3 caracteres.</small>
+              </div>
+              <div class="field">
+                <label for="username">Nombre de usuario <span class="required">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-prefix" aria-hidden="true">@</span>
+                  <input class="with-prefix" id="username" formControlName="username" autocomplete="username" placeholder="juan_perez" [class.is-invalid]="esCampoInvalido('username')" [attr.aria-invalid]="esCampoInvalido('username')" aria-describedby="username-help username-message" />
+                </div>
+                <small class="field-hint" id="username-help">Mínimo 4 caracteres. Se comprueba al salir del campo.</small>
+                <small class="field-pending" id="username-message" *ngIf="usernameControl?.pending"><span class="spinner" aria-hidden="true"></span> Verificando disponibilidad (simulación)...</small>
+                <small class="field-error" *ngIf="esCampoInvalido('username') && usernameControl?.hasError('required')">El nombre de usuario es obligatorio.</small>
+                <small class="field-error" *ngIf="esCampoInvalido('username') && usernameControl?.hasError('minlength')">Debe tener al menos 4 caracteres.</small>
+                <small class="field-error" *ngIf="esCampoInvalido('username') && usernameControl?.hasError('usernameOcupado')">Este nombre de usuario ya está ocupado. Elige otro.</small>
+                <small class="field-success" *ngIf="usernameControl?.valid && !usernameControl?.pending && usernameControl?.touched">✓ Nombre de usuario disponible.</small>
+              </div>
+              <div class="field">
+                <label for="correo">Correo electrónico <span class="required">*</span></label>
+                <input id="correo" type="email" formControlName="correo" autocomplete="email" placeholder="ejemplo@correo.com" [class.is-invalid]="esCampoInvalido('correo')" [attr.aria-invalid]="esCampoInvalido('correo')" aria-describedby="correo-error" />
+                <small id="correo-error" class="field-error" *ngIf="esCampoInvalido('correo')">Ingresa un correo electrónico válido.</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="security-heading" formGroupName="passwords">
+            <div class="section-heading">
+              <span class="section-number">02</span>
+              <div><h3 id="security-heading">Seguridad de la cuenta</h3><p>Define las credenciales de acceso</p></div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="password">Contraseña <span class="required">*</span></label>
+                <div class="input-wrap password-wrap">
+                  <input id="password" [type]="mostrarContrasena ? 'text' : 'password'" formControlName="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" [class.is-invalid]="esCampoInvalido('passwords.password')" [attr.aria-invalid]="esCampoInvalido('passwords.password')" />
+                  <button class="show-password" type="button" (click)="mostrarContrasena = !mostrarContrasena" [attr.aria-label]="mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'">{{ mostrarContrasena ? 'Ocultar' : 'Mostrar' }}</button>
+                </div>
+                <small class="field-error" *ngIf="esCampoInvalido('passwords.password')">La contraseña debe tener al menos 6 caracteres.</small>
+              </div>
+              <div class="field">
+                <label for="confirmPassword">Confirmar contraseña <span class="required">*</span></label>
+                <div class="input-wrap password-wrap">
+                  <input id="confirmPassword" [type]="mostrarConfirmacion ? 'text' : 'password'" formControlName="confirmPassword" autocomplete="new-password" placeholder="Repite tu contraseña" [class.is-invalid]="esCampoInvalido('passwords.confirmPassword') || esPasswordInvalido()" [attr.aria-invalid]="esCampoInvalido('passwords.confirmPassword') || esPasswordInvalido()" />
+                  <button class="show-password" type="button" (click)="mostrarConfirmacion = !mostrarConfirmacion" [attr.aria-label]="mostrarConfirmacion ? 'Ocultar confirmación' : 'Mostrar confirmación'">{{ mostrarConfirmacion ? 'Ocultar' : 'Mostrar' }}</button>
+                </div>
+                <small class="field-error" *ngIf="esCampoInvalido('passwords.confirmPassword') && passwordsGroup?.get('confirmPassword')?.hasError('required')">Confirma tu contraseña.</small>
+                <small class="field-error" *ngIf="esPasswordInvalido()">Las contraseñas no coinciden.</small>
+              </div>
+            </div>
+            <div class="security-note"><span aria-hidden="true">●</span> En esta práctica las contraseñas se validan únicamente en tu navegador y no se almacenan.</div>
+          </section>
+
+          <section class="form-section refs-section" aria-labelledby="refs-heading">
+            <div class="section-heading refs-heading">
+              <span class="section-number">03</span>
+              <div class="heading-body"><h3 id="refs-heading">Referencias personales <span class="count-badge">{{ referenciasArray.length }}</span></h3><p>Agrega al menos una referencia de contacto</p></div>
+              <button type="button" class="add-reference" (click)="agregarReferencia()" aria-label="Agregar otra referencia"><span aria-hidden="true">＋</span> Agregar</button>
+            </div>
+            <div formArrayName="referencias" class="references-list">
+              <div class="reference-card" *ngFor="let referencia of referenciasArray.controls; let i = index" [formGroupName]="i">
+                <div class="reference-header">
+                  <span class="reference-label">REFERENCIA {{ i + 1 | number:'2.0-0' }}</span>
+                  <button type="button" class="remove-reference" (click)="eliminarReferencia(i)" [disabled]="referenciasArray.length === 1" [attr.aria-label]="'Eliminar referencia ' + (i + 1)">Eliminar</button>
+                </div>
+                <div class="field-grid">
+                  <div class="field">
+                    <label [for]="'nombreRef-' + i">Nombre de referencia <span class="required">*</span></label>
+                    <input [id]="'nombreRef-' + i" formControlName="nombreRef" placeholder="Nombre y apellido" [class.is-invalid]="referenciaInvalida(i, 'nombreRef')" [attr.aria-invalid]="referenciaInvalida(i, 'nombreRef')" />
+                    <small class="field-error" *ngIf="referenciaInvalida(i, 'nombreRef')">El nombre de referencia es obligatorio.</small>
+                  </div>
+                  <div class="field">
+                    <label [for]="'telefonoRef-' + i">Teléfono <span class="required">*</span></label>
+                    <input [id]="'telefonoRef-' + i" type="tel" formControlName="telefonoRef" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" [class.is-invalid]="referenciaInvalida(i, 'telefonoRef')" [attr.aria-invalid]="referenciaInvalida(i, 'telefonoRef')" />
+                    <small class="field-error" *ngIf="referenciaInvalida(i, 'telefonoRef')">Ingresa de 9 a 10 dígitos numéricos.</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="form-footer">
+            <p class="submit-notice" *ngIf="enviado && registroForm.invalid" role="alert">Revisa los campos señalados antes de continuar.</p>
+            <div class="actions">
+              <button type="button" class="btn-reset" (click)="resetearFormulario()">Limpiar formulario</button>
+              <button type="submit" class="btn-primary" [disabled]="registroForm.pending"><span class="spinner spinner-light" *ngIf="registroForm.pending" aria-hidden="true"></span>{{ registroForm.pending ? 'Validando...' : 'Registrar usuario' }}<span *ngIf="!registroForm.pending" aria-hidden="true"> →</span></button>
+            </div>
+          </div>
+        </form>
+
+        <section class="success-panel" *ngIf="datosGuardados" aria-live="polite" aria-labelledby="success-heading">
+          <div class="success-header"><span class="success-icon" aria-hidden="true">✓</span><div><h3 id="success-heading">¡Registro validado correctamente!</h3><p>Los datos se han procesado en el navegador.</p></div></div>
+          <pre>{{ datosGuardados | json }}</pre>
+          <small>No se guarda una cuenta real ni se muestran las contraseñas.</small>
+        </section>
+      </section>
+
+      <aside class="sidebar" aria-label="Información de la práctica">
+        <section class="status-card">
+          <div class="status-top"><span>ESTADO DEL FORMULARIO</span><span class="status-dot" [class.status-ready]="registroForm.valid" [class.status-wait]="registroForm.pending"></span></div>
+          <h3>{{ registroForm.pending ? 'Verificando datos' : registroForm.valid ? 'Listo para registrar' : 'Registro en progreso' }}</h3>
+          <p>Completa todos los campos para finalizar el proceso.</p>
+          <div class="progress-meta"><span>Campos principales</span><strong>{{ camposCompletos }} de 5</strong></div>
+          <div class="progress-track" role="progressbar" [attr.aria-valuenow]="porcentajeCompletado" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del formulario"><div class="progress-fill" [style.width.%]="porcentajeCompletado"></div></div>
+          <span class="progress-caption">{{ porcentajeCompletado }}% completado</span>
+        </section>
+
+        <section class="tips-card">
+          <h3>Antes de continuar</h3>
+          <div class="tip"><span class="tip-index">01</span><p>Usa un correo electrónico con un formato válido.</p></div>
+          <div class="tip"><span class="tip-index">02</span><p>El nombre de usuario se comprueba al salir del campo.</p></div>
+          <div class="tip"><span class="tip-index">03</span><p>Las contraseñas deben coincidir.</p></div>
+          <div class="tip"><span class="tip-index">04</span><p>Las referencias deben tener nombres y teléfonos válidos.</p></div>
+        </section>
+
+        <section class="demo-card">
+          <span class="demo-tag">ENTORNO DE PRÁCTICA</span>
+          <h3>Validación asíncrona</h3>
+          <p>Prueba uno de estos nombres ocupados para observar el resultado después de 1,5 segundos:</p>
+          <div class="username-chips"><code>admin</code><code>root</code><code>usuario123</code><code>angular_pro</code></div>
+          <p class="demo-disclaimer">Comprobación simulada con RxJS; no consulta una API real.</p>
+        </section>
+      </aside>
+    </div>
+    <footer class="page-footer"><span>FormLab · Práctica 7</span><span>Angular · Reactive Forms · FormBuilder · FormArray</span></footer>
+  </main>
+</div>

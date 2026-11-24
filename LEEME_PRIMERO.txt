@@ -1,0 +1,25 @@
+CLASE 7 - ANGULAR 20 - FORMULARIOS REACTIVOS (VERSIÓN REPARADA)
+
+1. Extrae este ZIP en una carpeta NUEVA.
+2. Abre esa carpeta en VS Code (debe verse package.json directamente).
+3. Ejecuta en PowerShell, en este orden:
+
+   npm install
+   npm run doctor
+   npm run typecheck
+   npm start
+
+4. Abre http://localhost:4200
+
+Para subirlo a Vercel / Netlify: npm run build
+
+Errores corregidos:
+- TS5098: moduleResolution bundler, compatible con Angular 20.
+- TS7016: rutas explícitas a tipos RxJS integrados.
+- TS7006: tipo explícito del operador map.
+
+Si npm run doctor indica que faltan los tipos RxJS:
+  npm install rxjs@7.8.2 --save-exact
+  npm run doctor
+
+El proyecto es una práctica de frontend independiente y NO modifica NEXO QX.
